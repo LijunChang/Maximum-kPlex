@@ -74,7 +74,7 @@ Graph::~Graph() {
 		s_vis = NULL;
 	}
 	if(s_heap != NULL) {
-		delete[] s_heap;
+		delete s_heap;
 		s_heap = NULL;
 	}
 	if(s_edgelist_pointer != NULL) {
