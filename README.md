@@ -6,7 +6,17 @@
 $ make clean
 $ make
 ```
-It generates an executable "kPlexS".
+It generates an executable "kPlexS", which corresponds to the kPlexS algorithm.
+
+For generating the algorithm kPlexF, please define NO_TRUSS_PRUNE in Utility.h by adding the following line and then recompiling the code.
+```
+#define NO_TRUSS_PRUNE
+```
+
+For generating the algorithm Bnb-ct, please define NAIVE in Utility.h by adding the following line and then recompiling the code.
+```
+#define NAIVE
+```
 
 ## Run the code
 
