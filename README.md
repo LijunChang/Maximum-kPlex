@@ -13,23 +13,23 @@ For generating the algorithm kPlexF, please define NO_TRUSS_PRUNE in Utility.h b
 #define NO_TRUSS_PRUNE
 ```
 
-For generating the algorithm Bnb-ct, please define NAIVE in Utility.h by adding the following line and then recompiling the code.
+For generating the algorithm BnB-ct, please define NAIVE in Utility.h by adding the following line and then recompiling the code.
 ```
 #define NAIVE
 ```
 
 ## Run the code
 
-Different algorithms can be invoked by executing "MC-BRB".
 ```sh
-$ ./MC-BRB {alg} {graph_directory}
+$ ./kPlexS -g {path_to_graph} -a exact -k {k_value} -o
 ```
-alg is chosen from "MC-DD, MC-EGO, MC-BRB, verify"
 
 An example of computing the exact maximum clique for the dataset CA-GrQc is as follows
 ```sh
-$ ./MC-BRB MC-BRB datasets/CA-GrQc
+$ ./kPlexS -g datasets/CA-GrQc -a exact -k 2 -o
 ```
 
 ## Data format
+
+
 Each graph is represented by two binary files, b_adj.bin and b_degree.bin (e.g. datasets/CA-GrQc/b_adj.bin and datasets/CA-GrQc/b_degree.bin). More details of the data format can be found in [https://lijunchang.github.io/Cohesive_subgraph_book/datasets](https://lijunchang.github.io/Cohesive_subgraph_book/datasets)
