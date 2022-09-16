@@ -24,7 +24,7 @@ For generating the algorithm BnB-ct, please define NAIVE in Utility.h by adding 
 $ ./kPlexS -g {path_to_graph} -a exact -k {k_value} -o
 ```
 
-An example of computing the exact maximum clique for the dataset CA-GrQc is as follows
+An example of computing the exact maximum 3-plex for the dataset CA-GrQc is as follows
 ```sh
 $ ./kPlexS -g datasets/CA-GrQc -a exact -k 2 -o
 ```
