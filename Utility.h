@@ -17,8 +17,6 @@
 #define NDEBUG
 #include <cassert>
 
-//#define NO_TRUSS_PRUNE
-
 // #define NAIVE
 
 #ifndef NAIVE
