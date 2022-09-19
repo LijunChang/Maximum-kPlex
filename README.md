@@ -26,9 +26,9 @@ The more time-efficient format is the binary format; to read the input graph fro
 
 ## Algorithms kPlexF and BnB-ct
 
-For generating the algorithm kPlexF, please define NO_TRUSS_PRUNE in Utility.h by adding the following line and then recompiling the code.
+For generating the algorithm kPlexF, please undefine _SECOND_ORDER_PRUNING_ in KPlex_BB_matrix.h by commenting (or removing) the following line and then recompiling the code.
 ```
-#define NO_TRUSS_PRUNE
+// #define _SECOND_ORDER_PRUNING_
 ```
 
 For generating the algorithm BnB-ct, please define NAIVE in Utility.h by adding the following line and then recompiling the code.
