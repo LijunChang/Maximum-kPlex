@@ -3,7 +3,7 @@
 This repository implements the maximum k-plex computation algorithm proposed in our VLDB 2023 paper. If you are using the code, please cite our paper.
 <pre>
 Lijun Chang, Mouyi Xu and Darren Strash.
-<a href="https://lijunchang.github.io/pdf/2022-Maximum-kPlex.pdf">Efficient Maximum 𝑘-Plex Computation over Large Sparse Graphs.</a>
+<a href="https://lijunchang.github.io/pdf/2022-Maximum-kPlex.pdf">Efficient Maximum k-Plex Computation over Large Sparse Graphs.</a>
 Proc. VLDB Endow. 16(2), (2022)
 </pre>
 
