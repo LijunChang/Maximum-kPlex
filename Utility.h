@@ -17,12 +17,6 @@
 #define NDEBUG
 #include <cassert>
 
-// #define NAIVE
-
-#ifndef NAIVE
-#define MY_SOLVER
-#endif
-
 using ui = unsigned int; // vertex type
 using ept = unsigned long; // edge pointer type; unsigned int can be used to process upto two billion undirected edges
 
