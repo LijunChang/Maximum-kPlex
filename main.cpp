@@ -18,14 +18,6 @@ int main(int argc, char *argv[]) {
 	printf("**** kPlexS (Release) build at %s %s ***\n", __TIME__, __DATE__);
 #endif
 
-#ifdef MY_SOLVER
-	printf("My solver\n");
-#endif
-
-#ifdef NAIVE
-	printf("NAIVE\n");
-#endif
-
 	bool output = false;
 	bool binary_input = false;
 
@@ -72,7 +64,7 @@ int main(int argc, char *argv[]) {
 
 	if(output) graph->output_one_kplex();
 
-	// delete graph; // there are some bugs in releasing memory
+	delete graph;
 
 	printf("\n");
 	return 0;
