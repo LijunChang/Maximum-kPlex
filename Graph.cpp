@@ -1,6 +1,5 @@
 #include "Graph.h"
 #include "KPlex_BB_matrix.h"
-#include "KPlex_IJCAI18.h"
 
 using namespace std;
 
@@ -264,8 +263,6 @@ void Graph::kPlex_exact() {
 	delete[] degree;
 
 	assert(kplex.size() >= K);
-	//while(kplex.size() < 31) kplex.pb(0);
-
 	if(kplex.size() < UB) {
 		ui old_size = kplex.size();
 		ui *out_mapping = new ui[n];
@@ -312,10 +309,6 @@ void Graph::kPlex_exact() {
 			m -= 2*peeling(n, linear_heap, Qv, Qv_n, kplex.size()+1-K, Qe, true, kplex.size()+1-2*K, tri_cnt, active_edgelist, active_edgelist_n, edge_list, edgelist_pointer, deleted, degree, pstart, pend, edges, exists);
 			printf("*** After core-truss co-pruning: n = %s, m = %s, density = %.4lf\n", Utility::integer_to_string(n-Qv_n).c_str(), Utility::integer_to_string(m/2).c_str(), double(m)/(n-Qv_n)/(n-Qv_n-1));
 		}
-		//for(ui i = kplex.size()+2-K;i < n;i ++) {
-		//	m -= 2*peeling(linear_heap, Qv, 0, n, Qe, true, i, tri_cnt, active_edgelist, active_edgelist_n, edge_list, edgelist_pointer, deleted, degree, pend, exists);
-		//	printf("%u: Number of remaining undirected edges: %s\n", i, Utility::integer_to_string(m/2).c_str());
-		//}
 
 		Timer tt;
 
@@ -334,16 +327,7 @@ void Graph::kPlex_exact() {
 		s_active_edgelist = new ui[m/2];
 		s_deleted = new char[m/2];
 
-#ifdef MY_SOLVER
 		KPLEX_BB_MATRIX *kplex_solver = new KPLEX_BB_MATRIX();
-#else
-		KPlex_IJCAI18 *kplex_solver = nullptr;
-#ifndef NDEBUG
-		kplex_solver = new KPlex_IJCAI18(true);
-#else
-		kplex_solver = new KPlex_IJCAI18(false);
-#endif
-#endif
 		kplex_solver->allocateMemory(max_n, m/2);
 
 		vector<pair<int,int> > vp; vp.reserve(m/2);
@@ -356,15 +340,9 @@ void Graph::kPlex_exact() {
 			ui u, key;
 			bool ret_tmp = linear_heap->pop_min(u, key);
 			assert(ret_tmp);
-			// if(key != 0) printf("u = %u, key = %u\n", u, key);
 			if(key < kplex.size()+1-K) {
-#ifndef NDEBUG
-				//if(degree[u] != 0) printf("u=%u, degree=%u, key=%u, kplex.size=%lu\n", u, degree[u], key, kplex.size());
-#endif
-				// assert(degree[u] == 0);
 				if(degree[u] != 0) { // degree[u] == 0 means u is deleted. it could be the case that degree[u] == 0, but key[u] > 0, as key[u] is not fully updated in linear_heap
 					Qv[0] = u; Qv_n = 1;
-					//printf("hit\n");
 					if(kplex.size()+1>2*K) m -= 2*peeling(n, linear_heap, Qv, Qv_n, kplex.size()+1-K, Qe, false, kplex.size()+1-2*K, tri_cnt, active_edgelist, active_edgelist_n, edge_list, edgelist_pointer, deleted, degree, pstart, pend, edges, exists);
 					else m -= 2*peeling(n, linear_heap, Qv, Qv_n, kplex.size()+1-K, Qe, false, 0, tri_cnt, active_edgelist, active_edgelist_n, edge_list, edgelist_pointer, deleted, degree, pstart, pend, edges, exists);
 				}
@@ -381,15 +359,6 @@ void Graph::kPlex_exact() {
 #ifndef NDEBUG
 			for(ui i = 0;i < n;i ++) assert(!exists[i]);
 #endif
-#ifdef NAIVE
-			ids_n = 1; ids[0] = u;
-			linear_heap->get_ids(ids, ids_n);
-			if(ids_n != n-i) printf("ids_n: %u, n-i: %u\n", ids_n, n-i);
-			assert(ids_n == n-i);
-			extract_subgraph_full(ids, ids_n, rid, vp, exists, pstart, pend, edges, deleted, edgelist_pointer);
-			//write_subgraph(ids_n, vp);
-			UB = kplex.size();
-#else
 			if(kplex.size()+1 >= 2*K) {
 				extract_subgraph_and_prune(u, ids, ids_n, rid, vp, Qe, t_degree, exists, pend, deleted, edgelist_pointer);
 				if(ids_n) {
@@ -398,7 +367,6 @@ void Graph::kPlex_exact() {
 					if(density < min_density_prune) min_density_prune = density;
 					if(ids_n > max_n_prune) max_n_prune = ids_n;
 				}
-				//if(ids_n > kplex.size()&&vp.size()*2 < m) subgraph_prune(ids, ids_n, vp, rid, Qv, Qe, exists);
 			}
 			else {
 				extract_subgraph(u, ids, ids_n, rid, vp, exists, pstart, pend, edges, deleted, edgelist_pointer);
@@ -407,8 +375,6 @@ void Graph::kPlex_exact() {
 				if(density < min_density_prune) min_density_prune = density;
 				if(ids_n > max_n_prune) max_n_prune = ids_n;
 			}
-#endif
-			//printf("%lu %lu\n", ids_n, kplex.size());
 			ui pre_size = kplex.size();
 			if(ids_n > kplex.size()) {
 				double density = (double(vp.size()*2))/ids_n/(ids_n-1);
@@ -416,15 +382,9 @@ void Graph::kPlex_exact() {
 				if(density < min_density_search) min_density_search = density;
 				if(ids_n > max_n_search) max_n_search = ids_n;
 				kplex_solver->load_graph(ids_n, vp);
-#ifdef NAIVE
-				kplex_solver->kPlex(K, kplex, false);
-				UB = kplex.size();
-#else
 				kplex_solver->kPlex(K, kplex, true);
-#endif
 			}
 			Qv[0] = u; Qv_n = 1;
-			//printf("kplex.size()=%lu\n", kplex.size());
 			if(kplex.size() != pre_size&&kplex.size()+1 > 2*K) {
 				for(ui j = 0;j < kplex.size();j ++) kplex[j] = ids[kplex[j]];
 				//output_one_kplex(); break;
@@ -442,15 +402,12 @@ void Graph::kPlex_exact() {
 		printf("prune_cnt: %u, max_n: %u, min_density: %.4lf, avg_density: %.4lf\n", prune_cnt, max_n_prune, min_density_prune, total_density_prune/prune_cnt);
 		printf("search_cnt: %u, max_n: %u, min_density: %.4lf, avg_density: %.4lf\n", search_cnt, max_n_search, min_density_search, total_density_search/search_cnt);
 
-		//printf("here\n");
 		if(kplex.size() > old_size) {
 			for(ui i = 0;i < kplex.size();i ++) {
-				//printf("%u %u %u\n", i, kplex[i], n);
 				assert(kplex[i] < n);
 				kplex[i] = out_mapping[kplex[i]];
 			}
 		}
-		//printf("here1\n");
 
 		delete kplex_solver;
 		delete linear_heap;
@@ -1051,7 +1008,6 @@ char Graph::find(ui u, ui w, ept &b, ept e, char *deleted, ept &idx, ui *edgelis
 // return the number of peeled edges
 ept Graph::peeling(ui critical_vertex, ListLinearHeap *linear_heap, ui *Qv, ui &Qv_n, ui d_threshold, ui *Qe, bool initialize_Qe, ui t_threshold, ui *tri_cnt, ui *active_edgelist, ui &active_edgelist_n, ui *edge_list, ui *edgelist_pointer, char *deleted, ui *degree, ept *pstart, ept *pend, ui *edges, char *exists) {
 	ept Qe_n = 0;
-#ifndef NO_TRUSS_PRUNE
 	if(initialize_Qe) {
 		ept active_edgelist_newn = 0;
 		for(ept j = 0;j < active_edgelist_n;j ++) if(!deleted[active_edgelist[j]]) {
@@ -1060,9 +1016,6 @@ ept Graph::peeling(ui critical_vertex, ListLinearHeap *linear_heap, ui *Qv, ui &
 		}
 		active_edgelist_n = active_edgelist_newn;
 	}
-#endif
-
-	//printf("%lu\n", Qe_n);
 
 	ept deleted_edges_n = 0;
 	ui Qv_idx = 0;
@@ -1105,9 +1058,6 @@ ept Graph::peeling(ui critical_vertex, ListLinearHeap *linear_heap, ui *Qv, ui &
 
 			for(ept k = pstart[u];k < pend[u];k ++) exists[edges[k]] = 0;
 		}
-#ifdef NO_TRUSS_PRUNE
-		Qe_n = 0;
-#endif
 		for(ept j = 0;j < Qe_n;j ++) {
 			ept idx = Qe[j];
 			ui u = edge_list[idx<<1], v = edge_list[(idx<<1)+1];
